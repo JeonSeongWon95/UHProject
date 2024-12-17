@@ -10,5 +10,5 @@
 
 
 <details>
-  <summary> (TitleScene, PlayScene, EndScene) </summary>
+  <summary> </summary>
 </details>
