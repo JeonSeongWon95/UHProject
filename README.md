@@ -5,6 +5,11 @@
 
 [구글드라이브](https://drive.google.com/drive/folders/1841MCMNeRiewMbUMldkF0Vm1SYF6zKA5?usp=drive_link)
 
+본 Repository는 Main Repository입니다.
+Fork를 하여 본인의 Repository를 생성하고 거기서 작업 후 PR을 통해 Main Repository에 반영해주시길 바랍니다.
+
+그리고 본인의 Repository에서 작업 시 먼저 Remote Repository Upstream으로 본 Repository를 추가하고 항상 Fetch/Rebase를 해야합니다.
+
 
 # 공유사항
 
