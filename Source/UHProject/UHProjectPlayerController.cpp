@@ -30,3 +30,13 @@ void AUHProjectPlayerController::FadeIn()
 {
     PlayerCameraManager->StartCameraFade(1.f, 0.f, mDuration, FLinearColor::Black, false, true);
 }
+
+void AUHProjectPlayerController::ShowMouseCursor()
+{
+    bShowMouseCursor = true;
+}
+
+void AUHProjectPlayerController::HideMouseCursor()
+{
+    bShowMouseCursor = false;
+}

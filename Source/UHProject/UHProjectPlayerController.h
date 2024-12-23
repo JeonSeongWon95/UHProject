@@ -19,6 +19,12 @@ public:
 
 	UFUNCTION()
 	void FadeIn();
+
+	UFUNCTION()
+	void ShowMouseCursor();
+
+	UFUNCTION()
+	void HideMouseCursor();
 	
 protected:
 

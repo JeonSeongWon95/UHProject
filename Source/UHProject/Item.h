@@ -1,26 +1,38 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ObjectInterface.h"
 #include "Item.generated.h"
 
 UCLASS()
-class UHPROJECT_API AItem : public AActor
+class UHPROJECT_API AItem : public AActor , public IObjectInterface
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AItem();
 
+	UFUNCTION()
+	virtual FString GetObjectName()
+	{
+		return Name;
+	};
+
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void Interaction_Implementation() override;
+
+	UPROPERTY()
+	TObjectPtr<class AUHProjectCharacter> mPlayerCharacter;
+	
+	UPROPERTY()
+	FString Name;
+
+
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };

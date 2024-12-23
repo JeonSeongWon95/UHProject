@@ -15,6 +15,9 @@ public:
 	bool IsLineTraceOn = false;
 
 	UPROPERTY()
+	bool IsInTheCar = false;
+
+	UPROPERTY()
 	bool CanMove = false;
 
 	UPROPERTY()

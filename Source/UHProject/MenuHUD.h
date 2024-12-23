@@ -23,6 +23,18 @@ public:
 	UFUNCTION()
 	void BeginPlay() override;
 
+	UFUNCTION()
+	void PrintCurrentDay();
+
+	UFUNCTION()
+	void RemoveCurrentDayWidget();
+
+	UFUNCTION()
+	void SetAndShowObjectPopUp(FString Name, bool ShowPressEKey);
+
+	UFUNCTION()
+	void RemoveObjectPopUp();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<class UTitleWidget> mTitleWidgetClass;
 
@@ -34,6 +46,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TObjectPtr<class UStartStoryDescriptionWidget> mSSDWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	TSubclassOf<class UCurrentDayPrintWidget> mDayPrintWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	TObjectPtr<class UCurrentDayPrintWidget> mDayPrintWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	TSubclassOf<class UPressEWidget> mPressEWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	TObjectPtr<class UPressEWidget> mPressEWidget;
 
 private:
 
@@ -54,6 +78,18 @@ private:
 
 	UPROPERTY()
 	FTimerHandle mTypingTimerHandle;
+
+	UPROPERTY()
+	TObjectPtr<class AUHPlayerState> mPlayerState;
+
+	UPROPERTY()
+	float mStayTimer;
+
+	UPROPERTY()
+	TObjectPtr<class AUHProjectGameState> mGameState;
+
+	UPROPERTY()
+	FTimerHandle mCurrentDayPrintTimer;
 
 
 	

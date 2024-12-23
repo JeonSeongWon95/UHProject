@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -37,8 +35,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractionAction;
+
 	UPROPERTY()
 	TObjectPtr<class AUHPlayerState> mPlayerState;
+
+	UPROPERTY()
+	TObjectPtr<class AItem> mCurrentHitItem;
 
 	UPROPERTY()
 	float mLength;
@@ -53,14 +57,24 @@ public:
 
 	UFUNCTION()
 	void StopLineTrace();
+	
+	UFUNCTION()
+	void EquipItem();
+
+	UFUNCTION()
+	void UnEquipItem();
 
 protected:
 	void Move(const FInputActionValue& Value);
 
 	void Look(const FInputActionValue& Value);
 
-protected:
+	void Interaction(const FInputActionValue& Value);
+
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+
+	UPROPERTY()
+	TObjectPtr<class AMenuHUD> mHUD;
 
 public:
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
