@@ -12,6 +12,7 @@
 #include "MenuHUD.h"
 #include "Item.h"
 #include "PickUpItem.h"
+#include "ItemSlot.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -24,6 +25,9 @@ AUHProjectCharacter::AUHProjectCharacter()
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 	FirstPersonCameraComponent->SetRelativeLocation(FVector(-10.f, 0.f, 60.f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+
+	mItemSlot = CreateDefaultSubobject<UItemSlot>(TEXT("ItemSlot"));
+	mItemSlot->SetupAttachment(GetCapsuleComponent());
 
 	mLength = 100.0f;
 }
@@ -82,11 +86,11 @@ void AUHProjectCharacter::LineTrace()
 
 	if (mCurrentHitItem != nullptr)
 	{
-		mHUD->SetAndShowObjectPopUp(mCurrentHitItem->GetObjectName(), true);
+		mHUD->SetAndShowObjectPopUp(mCurrentHitItem->Name, true);
 	}
 	else
 	{
-		mHUD->SetAndShowObjectPopUp(mCurrentHitItem->GetObjectName(), false);
+		mHUD->SetAndShowObjectPopUp(mCurrentHitItem->Name, false);
 	}
 }
 
@@ -110,14 +114,25 @@ void AUHProjectCharacter::StopLineTrace()
 	GetWorld()->GetTimerManager().ClearTimer(LineTraceTimer);
 }
 
-void AUHProjectCharacter::EquipItem()
+void AUHProjectCharacter::EquipItem(APickUpItem* SelectedItem)
 {
-	APickUpItem* item = Cast<APickUpItem>(mCurrentHitItem);
+	if (mPlayerState->IsEquip) 
+	{
+		UnEquipItem();
+	}
+
+	mEquipItem = SelectedItem;
+	mEquipItem->DisableLineTraceCollisionAndPhyiscs();
+	mEquipItem->AttachToComponent(mItemSlot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	mPlayerState->IsEquip = true;
 }
 
 void AUHProjectCharacter::UnEquipItem()
 {
-
+	mEquipItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	mEquipItem->EnableLineTraceCollisionAndPhyiscs();
+	mEquipItem = nullptr;
+	mPlayerState->IsEquip = false;
 }
 
 void AUHProjectCharacter::Move(const FInputActionValue& Value)
@@ -170,6 +185,6 @@ void AUHProjectCharacter::Interaction(const FInputActionValue& Value)
 	}
 	else 
 	{
-		UE_LOG(LogTemp, Error, TEXT("Current Hit Actor Do Not have Implements"))
+
 	}
 }

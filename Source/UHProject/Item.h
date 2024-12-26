@@ -13,12 +13,19 @@ class UHPROJECT_API AItem : public AActor , public IObjectInterface
 public:	
 	AItem();
 
-	UFUNCTION()
-	virtual FString GetObjectName()
-	{
-		return Name;
-	};
+	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY()
+	int ItemID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UFUNCTION()
+	virtual void DisableLineTraceCollisionAndPhyiscs();
+
+	UFUNCTION()
+	virtual void EnableLineTraceCollisionAndPhyiscs();
 
 protected:
 	virtual void BeginPlay() override;
@@ -27,12 +34,19 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class AUHProjectCharacter> mPlayerCharacter;
-	
-	UPROPERTY()
-	FString Name;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> ItemMesh;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<class UBoxComponent> LineTraceCollision;
+
+	UFUNCTION()
+	void LineTraceCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void LineTraceCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 };

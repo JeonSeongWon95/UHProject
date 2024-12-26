@@ -30,6 +30,9 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UItemSlot> mItemSlot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -43,6 +46,9 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<class AItem> mCurrentHitItem;
+
+	UPROPERTY()
+	TObjectPtr<APickUpItem> mEquipItem;
 
 	UPROPERTY()
 	float mLength;
@@ -59,7 +65,7 @@ public:
 	void StopLineTrace();
 	
 	UFUNCTION()
-	void EquipItem();
+	void EquipItem(APickUpItem* SeletedItem);
 
 	UFUNCTION()
 	void UnEquipItem();

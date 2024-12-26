@@ -12,11 +12,5 @@ class UHPROJECT_API APickUpItem : public AItem
 
 public:
 	virtual void Interaction_Implementation() override;
-
-	UPROPERTY()
-	int ItemID;
-
-	UPROPERTY()
-	TObjectPtr<UStaticMeshComponent> ItemMesh;
 	
 };

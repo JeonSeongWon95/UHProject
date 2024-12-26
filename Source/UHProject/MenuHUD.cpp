@@ -37,7 +37,7 @@ AMenuHUD::AMenuHUD()
 
 void AMenuHUD::StartTyping(const FString& TypingText, float TypingSpeed)
 {
-	mTitleWidget->RemoveFromViewport();
+	mTitleWidget->RemoveFromParent();
 	mSSDWidget->AddToViewport();
 
 	mTargetText = TypingText;
@@ -161,7 +161,7 @@ void AMenuHUD::SetAndShowObjectPopUp(FString Name, bool ShowPressEKey)
 {
 	if (mPressEWidget->IsInViewport()) 
 	{
-		mPressEWidget->RemoveFromViewport();
+		mPressEWidget->RemoveFromParent();
 	}
 
 	mPressEWidget->SetObjectName(Name);
