@@ -13,6 +13,7 @@
 #include "Item.h"
 #include "PickUpItem.h"
 #include "ItemSlot.h"
+#include "UHProjectPlayerController.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -29,7 +30,7 @@ AUHProjectCharacter::AUHProjectCharacter()
 	mItemSlot = CreateDefaultSubobject<UItemSlot>(TEXT("ItemSlot"));
 	mItemSlot->SetupAttachment(GetCapsuleComponent());
 
-	mLength = 100.0f;
+	mLength = 150.0f;
 }
 
 void AUHProjectCharacter::BeginPlay()
@@ -37,7 +38,8 @@ void AUHProjectCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	mPlayerState = Cast<AUHPlayerState>(GetPlayerState());
-	mHUD = Cast<AMenuHUD>(mPlayerState->GetPlayerController()->GetHUD());
+	mPlayerController = Cast<AUHProjectPlayerController>(mPlayerState->GetPlayerController());
+	mHUD = Cast<AMenuHUD>(mPlayerController->GetHUD());
 }
 
 void AUHProjectCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -56,8 +58,6 @@ void AUHProjectCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AUHProjectCharacter::LineTrace()
 {
-	UE_LOG(LogTemp, Error, TEXT("LineTrace"))
-
 	FHitResult Result;
 
 	FVector CameraLocation;
@@ -69,9 +69,11 @@ void AUHProjectCharacter::LineTrace()
 	FVector EndVector = StartVector + (CameraRotation.Vector() * mLength);
 
 	FCollisionObjectQueryParams Params;
+	FCollisionQueryParams CollisionParams;
 	Params.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldDynamic);
+	CollisionParams.AddIgnoredActor(this);
 	
-	bool HitResult = GetWorld()->LineTraceSingleByObjectType(Result, StartVector, EndVector, Params);
+	bool HitResult = GetWorld()->LineTraceSingleByObjectType(Result, StartVector, EndVector, Params, CollisionParams);
 
 	FColor LineColor = HitResult ? FColor::Green : FColor::Red;
 	DrawDebugLine(GetWorld(), StartVector, EndVector, LineColor, false, 1.0f, 0, 2.0f);
@@ -108,6 +110,8 @@ void AUHProjectCharacter::StopLineTrace()
 {
 	if (mPlayerState == nullptr || !mPlayerState->IsLineTraceOn) 
 		return;
+
+	mHUD->RemoveObjectPopUp();
 
 	mPlayerState->IsLineTraceOn = false;
 	mCurrentHitItem = nullptr;

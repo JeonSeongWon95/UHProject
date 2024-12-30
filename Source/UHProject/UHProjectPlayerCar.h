@@ -23,9 +23,6 @@ protected:
 	TObjectPtr<UStaticMeshComponent> CarMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<class UBoxComponent> DoorCollision;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UBoxComponent> CarCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

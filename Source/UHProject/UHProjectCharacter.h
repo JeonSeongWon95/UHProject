@@ -45,6 +45,9 @@ public:
 	TObjectPtr<class AUHPlayerState> mPlayerState;
 
 	UPROPERTY()
+	TObjectPtr<class AUHProjectPlayerController> mPlayerController;
+
+	UPROPERTY()
 	TObjectPtr<class AItem> mCurrentHitItem;
 
 	UPROPERTY()

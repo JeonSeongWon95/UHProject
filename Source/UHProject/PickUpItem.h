@@ -12,5 +12,11 @@ class UHPROJECT_API APickUpItem : public AItem
 
 public:
 	virtual void Interaction_Implementation() override;
+
+	UFUNCTION()
+	void DisableLineTraceCollisionAndPhyiscs();
+
+	UFUNCTION()
+	void EnableLineTraceCollisionAndPhyiscs();
 	
 };

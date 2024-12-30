@@ -12,29 +12,12 @@ AItem::AItem()
 
 	LineTraceCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("LineTraceCollision"));
 	LineTraceCollision->SetupAttachment(ItemMesh);
+	LineTraceCollision->SetCollisionObjectType(ECollisionChannel::ECC_Vehicle);
 	LineTraceCollision->OnComponentBeginOverlap.AddDynamic(this, &AItem::LineTraceCollisionOverlap);
 	LineTraceCollision->OnComponentEndOverlap.AddDynamic(this, &AItem::LineTraceCollisionEndOverlap);
-}
 
-void AItem::DisableLineTraceCollisionAndPhyiscs()
-{
-	LineTraceCollision->SetActive(false);
-	ItemMesh->SetSimulatePhysics(false);
-	ItemMesh->SetEnableGravity(false);
-
-	LineTraceCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-}
-
-void AItem::EnableLineTraceCollisionAndPhyiscs()
-{
-	LineTraceCollision->SetActive(true);
-	ItemMesh->SetSimulatePhysics(true);
-	ItemMesh->SetEnableGravity(true);
-
-	LineTraceCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ObjectCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("ObjectCollision"));
+	ObjectCollision->SetupAttachment(ItemMesh);
 }
 
 void AItem::BeginPlay()

@@ -33,8 +33,8 @@ AUHProjectPlayerCar::AUHProjectPlayerCar()
 
 	CarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CarMesh"));
 
-	DoorCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorCollision"));
-	DoorCollision->SetupAttachment(CarMesh);
+	ObjectCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorCollision"));
+	ObjectCollision->SetupAttachment(CarMesh);
 
 	CarCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CarCollision"));
 	CarCollision->SetupAttachment(CarMesh);

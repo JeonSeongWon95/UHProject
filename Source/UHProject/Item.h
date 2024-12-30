@@ -21,12 +21,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Name;
 
-	UFUNCTION()
-	virtual void DisableLineTraceCollisionAndPhyiscs();
-
-	UFUNCTION()
-	virtual void EnableLineTraceCollisionAndPhyiscs();
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -40,6 +34,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class UBoxComponent> LineTraceCollision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<class UBoxComponent> ObjectCollision;
 
 	UFUNCTION()
 	void LineTraceCollisionOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
