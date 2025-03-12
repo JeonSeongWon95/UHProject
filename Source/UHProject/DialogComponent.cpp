@@ -14,15 +14,9 @@ UDialogComponent::UDialogComponent()
 		mDialogueWidgetClass = DW.Class;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DialogDataTable(TEXT("/Script/Engine.DataTable'/Game/SeongWon/BP/DialogSystem/DialogDataTable.DialogDataTable'"));
-
-	if (DialogDataTable.Succeeded())
-	{
-		mDialogDataTable = DialogDataTable.Object;
-	}
-
 	PrimaryComponentTick.bCanEverTick = true;
-	CurrentDataTableRowName = "0";
+
+    CurrentDataTableRowName = "0";
 }
 
 
@@ -57,36 +51,54 @@ void UDialogComponent::SetSpeakName(const FText& Name)
 
 void UDialogComponent::StartTalk()
 {
+    mDialogueWidget->HideAnswerBox();
+    
+
 	if (CurrentDataTableRowName == "End") 
 	{
 		EndTalk();
 		return;
 	}
+    else if (CurrentDataTableRowName == "A") 
+    {
+        ActionA();
+    }
+    else if (CurrentDataTableRowName == "B") 
+    {
+        ActionB();
+    }
+    else if (CurrentDataTableRowName == "C")
+    {
+        ActionC();
+    }
+    
 
-	FDialogStruct* Dialog = mDialogDataTable->FindRow<FDialogStruct>(CurrentDataTableRowName, TEXT(""));
+	Dialog = mDialogDataTable->FindRow<FDialogStruct>(CurrentDataTableRowName, TEXT(""));
 
-	if (Dialog != nullptr)
-	{
+    if (Dialog == nullptr)
+        return;
 
-		for (int i = 0; i < Dialog->AnswersCount; ++i) 
-		{
-			mDialogueWidget->AddAnswer(Dialog->Answers[i], Dialog->NextRows[i]);
-		}
+    if (!mDialogueWidget->IsInViewport())
+    {
+        mDialogueWidget->AddToViewport();
+    }
 
-		mDialogueWidget->SetDialog(Dialog->Dialog);
+    GetWorld()->GetTimerManager().SetTimer(TalkTimerHandle, this, &UDialogComponent::UpdateTalk, 0.05f, true);
 
-		if (!mDialogueWidget->IsInViewport())
-		{
-			mDialogueWidget->AddToViewport();
-		}
-	}
+    for (int i = 0; i < Dialog->Answers.Num(); ++i)
+    {
+        if (Dialog->Answers.Num() != Dialog->NextRows.Num())
+            return;
+
+        mDialogueWidget->AddAnswer(Dialog->Answers[i], Dialog->NextRows[i]);
+    }
 }
 
 void UDialogComponent::SetNextRowName(const FName& NewName)
 {
 	CurrentDataTableRowName = NewName;
 
-	if (NewName != "End") 
+	if (NewName != "End")
 	{
 		LastDataTableRowName = CurrentDataTableRowName;
 	}
@@ -102,5 +114,47 @@ void UDialogComponent::EndTalk()
 	CurrentDataTableRowName = LastDataTableRowName;
 	mNonPlayerCharacter->EndTalk();
 
+}
+
+void UDialogComponent::SetDialogDataTable(UDataTable* NewDataTable)
+{
+    mDialogDataTable = NewDataTable;
+}
+
+void UDialogComponent::SetStartDataTableRowName(FName StartName)
+{
+    CurrentDataTableRowName = StartName;
+}
+
+void UDialogComponent::UpdateTalk()
+{
+    if (Dialog->Dialog.Len() - 1 == DialogIndex) 
+    {
+        TransformDialog = "";
+        DialogIndex = 0;
+        GetWorld()->GetTimerManager().ClearTimer(TalkTimerHandle);
+        mDialogueWidget->ShowAnswerBox();
+    }
+    else
+    {
+        TransformDialog.AppendChar(Dialog->Dialog[DialogIndex]);
+        DialogIndex++;
+        mDialogueWidget->SetDialog(FText::FromString(TransformDialog));
+    }
+}
+
+void UDialogComponent::ActionB()
+{
+    mNonPlayerCharacter->DialogActionB();
+}
+
+void UDialogComponent::ActionC()
+{
+    mNonPlayerCharacter->DialogActionC();
+}
+
+void UDialogComponent::ActionA()
+{
+    mNonPlayerCharacter->DialogActionA();
 }
 

@@ -23,12 +23,15 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<class UDialogComponent> mDialogComponent;
 
+    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+    TObjectPtr<class UBorder> DialogBoxBorder;
+
 	UPROPERTY(BlueprintReadWrite)
-	TArray<struct FAnswerStruct> Answers;
+	TArray<class AAnswerActor*> Answers;
 
 	UPROPERTY(BlueprintReadWrite)
 	int32 ButtonIndex = 0;
-
+     
 	UFUNCTION()
 	void SetName(const FText& NewText);
 
@@ -55,4 +58,12 @@ public:
 
 	UFUNCTION()
 	void RemoveAnswer();
+
+    UFUNCTION()
+    void ShowAnswerBox();
+
+    UFUNCTION()
+    void HideAnswerBox();
+
+    virtual void NativeConstruct() override;
 };

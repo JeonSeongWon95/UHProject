@@ -11,6 +11,7 @@ class UHPROJECT_API AUHPlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
+
 	UPROPERTY()
 	bool IsLineTraceOn = false;
 
@@ -26,6 +27,14 @@ public:
 	UPROPERTY()
 	bool CanLook = false;
 
+    UPROPERTY()
+    bool IsSprint = false;
+
+    UPROPERTY()
+    bool HasFlashLight = true;
+
+    UPROPERTY()
+    bool TurnOnFlashLight = false;
 
 	
 };

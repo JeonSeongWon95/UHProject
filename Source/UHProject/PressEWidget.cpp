@@ -1,5 +1,6 @@
 #include "PressEWidget.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 
 void UPressEWidget::SetObjectName(FString NewName)
 {
@@ -8,10 +9,10 @@ void UPressEWidget::SetObjectName(FString NewName)
 
 void UPressEWidget::ShowPressEKeyText()
 {
-	PressEKey->SetVisibility(ESlateVisibility::Visible);
+	EKeyImage->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UPressEWidget::HidePressEKeyText()
 {
-	PressEKey->SetVisibility(ESlateVisibility::Hidden);
+    EKeyImage->SetVisibility(ESlateVisibility::Hidden);
 }

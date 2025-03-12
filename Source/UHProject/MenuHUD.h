@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -35,6 +35,12 @@ public:
 	UFUNCTION()
 	void RemoveObjectPopUp();
 
+    UFUNCTION()
+    void StartSoliloquy(FText NewText);
+
+    UFUNCTION()
+    void FinishedSoliloquy();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<class UTitleWidget> mTitleWidgetClass;
 
@@ -59,6 +65,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TObjectPtr<class UPressEWidget> mPressEWidget;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+    TSubclassOf<class UPlayerSoliloquyWidget> mSoliloquyWidgetClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+    TObjectPtr<class UPlayerSoliloquyWidget> mSoliloquyWidget;
+
 private:
 
 	UPROPERTY()
@@ -76,8 +88,14 @@ private:
 	UPROPERTY()
 	TObjectPtr<class AUHProjectPlayerController> mPlayerController;
 
+    UPROPERTY()
+    TObjectPtr<class AUHProjectCharacter> mPlayerCharacter;
+
 	UPROPERTY()
 	FTimerHandle mTypingTimerHandle;
+
+    UPROPERTY()
+    FTimerHandle mSoliloquyTimerHandle;
 
 	UPROPERTY()
 	TObjectPtr<class AUHPlayerState> mPlayerState;

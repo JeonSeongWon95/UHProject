@@ -1,4 +1,4 @@
-﻿#include "MenuHUD.h"
+#include "MenuHUD.h"
 #include "TitleWidget.h"
 #include "StartStoryDescriptionWidget.h"
 #include "UHProjectPlayerController.h"
@@ -6,6 +6,8 @@
 #include "UHProjectGameState.h"
 #include "CurrentDayPrintWidget.h"
 #include "PressEWidget.h"
+#include "UHProjectCharacter.h"
+#include "PlayerSoliloquyWidget.h"
 
 AMenuHUD::AMenuHUD()
 {
@@ -13,6 +15,8 @@ AMenuHUD::AMenuHUD()
 	static ConstructorHelpers::FClassFinder<UStartStoryDescriptionWidget> SSD(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/SeongWon/UI/Title/BP_StartStoryDescriptionWidget.BP_StartStoryDescriptionWidget_C'"));
 	static ConstructorHelpers::FClassFinder<UCurrentDayPrintWidget> DFW(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/SeongWon/UI/PrintDayWidget.PrintDayWidget_C'"));
 	static ConstructorHelpers::FClassFinder<UPressEWidget> PressWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/SeongWon/UI/PressEWidget.PressEWidget_C'"));
+    static ConstructorHelpers::FClassFinder<UPlayerSoliloquyWidget> SoliloquyWidget(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/SeongWon/UI/SoliloquyWidget.SoliloquyWidget_C'"));
+
 
 	if (Title.Succeeded())
 	{
@@ -33,6 +37,12 @@ AMenuHUD::AMenuHUD()
 	{
 		mPressEWidgetClass = PressWidget.Class;
 	}
+
+    if (SoliloquyWidget.Succeeded()) 
+    {
+        mSoliloquyWidgetClass = SoliloquyWidget.Class;
+    }
+
 }
 
 void AMenuHUD::StartTyping(const FString& TypingText, float TypingSpeed)
@@ -62,7 +72,7 @@ void AMenuHUD::UpdateTyping()
 	{
 		mStayTimer += 1;
 
-		if (mStayTimer > 5.0f)
+		if (mStayTimer > 10.0f)
 		{
 			mStayTimer = 0;
 			GetWorld()->GetTimerManager().ClearTimer(mTypingTimerHandle);
@@ -81,40 +91,42 @@ void AMenuHUD::BeginPlay()
 	mSSDWidget = Cast<UStartStoryDescriptionWidget>(CreateWidget(GetWorld(), mSSDWidgetClass));
 	mDayPrintWidget = Cast<UCurrentDayPrintWidget>(CreateWidget(GetWorld(), mDayPrintWidgetClass));
 	mPressEWidget = Cast<UPressEWidget>(CreateWidget(GetWorld(), mPressEWidgetClass));
+    mSoliloquyWidget = Cast<UPlayerSoliloquyWidget>(CreateWidget(GetWorld(), mSoliloquyWidgetClass));
 
 	mPlayerController = Cast<AUHProjectPlayerController>(GetWorld()->GetFirstPlayerController());
 	mPlayerState = Cast<AUHPlayerState>(mPlayerController->PlayerState);
+    mPlayerCharacter = Cast<AUHProjectCharacter>(mPlayerController->GetPawn());
 	mGameState = Cast<AUHProjectGameState>(GetWorld()->GetGameState());
 
 }
 
 void AMenuHUD::PrintCurrentDay()
 {
-	Days CurrentDay = mGameState->GetCurrentDay();
+	EDays CurrentDay = mGameState->GetCurrentDay();
 	FString Day = "";
 
 	switch (CurrentDay)
 	{
-	case Days::Monday:
-		Day = "MonDay";
+	case EDays::Monday:
+		Day = "월요일";
 		break;
-	case Days::Tuesday:
-		Day = "Tuesday";
+	case EDays::Tuesday:
+		Day = "화요일";
 		break;
-	case Days::Wednesday:
-		Day = "Wednesday";
+	case EDays::Wednesday:
+		Day = "수요일";
 		break;
-	case Days::Thursday:
-		Day = "Thursday";
+	case EDays::Thursday:
+		Day = "목요일";
 		break;
-	case Days::Friday:
-		Day = "Friday";
+	case EDays::Friday:
+		Day = "금요일";
 		break;
-	case Days::Saturday:
-		Day = "Saturday";
+	case EDays::Saturday:
+		Day = "토요일";
 		break;
-	case Days::Sunday:
-		Day = "Sunday";
+	case EDays::Sunday:
+		Day = "일요일";
 		break;
 	default:
 		break;
@@ -144,8 +156,6 @@ void AMenuHUD::RemoveCurrentDayWidget()
 			mStayTimer = 0;
 			mDayPrintWidget->RemoveFromParent();
 			mPlayerController->FadeIn();
-			mPlayerState->CanLook = true;
-			mPlayerState->CanMove = true;
 		}
 		else 
 		{
@@ -153,6 +163,7 @@ void AMenuHUD::RemoveCurrentDayWidget()
 		}
 	}
 
+    mPlayerCharacter->PlayerDriveStart();
 	GetWorld()->GetTimerManager().ClearTimer(mCurrentDayPrintTimer);
 
 }
@@ -184,4 +195,27 @@ void AMenuHUD::RemoveObjectPopUp()
 	{
 		mPressEWidget->RemoveFromParent();
 	}
+}
+
+void AMenuHUD::StartSoliloquy(FText NewText)
+{
+    if (mSoliloquyWidget == nullptr)
+        return;
+
+    mSoliloquyWidget->SetText(NewText);
+
+    if (!mSoliloquyWidget->IsInViewport()) 
+    {
+        mSoliloquyWidget->AddToViewport();
+    }
+
+    GetWorld()->GetTimerManager().SetTimer(mSoliloquyTimerHandle, this, &AMenuHUD::FinishedSoliloquy, 5.0f, true);
+}
+
+void AMenuHUD::FinishedSoliloquy()
+{
+    if (mSoliloquyWidget->IsInViewport()) 
+    {
+        mSoliloquyWidget->RemoveFromParent();
+    }
 }

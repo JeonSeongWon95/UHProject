@@ -5,8 +5,9 @@
 #include "UHProjectGameState.generated.h"
 
 UENUM(BlueprintType)
-enum class Days : uint8
+enum class EDays : uint8
 {
+    None UMETA(DisplayName = "None"),
 	Monday UMETA(DisplayName = "Monday"),
 	Tuesday UMETA(DisplayName = "Tuesday"),
 	Wednesday UMETA(DisplayName = "Wednesday"),
@@ -16,28 +17,43 @@ enum class Days : uint8
 	Sunday UMETA(DisplayName = "Sunday"),
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEventDispatcher_GameDayChange, EDays, NewDay);
+
 UCLASS()
 class UHPROJECT_API AUHProjectGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 
 private:
-	Days CurrentDay;
+
+    virtual void BeginPlay() override;
+
+protected:
+    UPROPERTY()
+    EDays CurrentDay = EDays::None;
 
 public:
-	Days GetCurrentDay() 
+    EDays GetCurrentDay()
 	{
 		return CurrentDay;
 	}
 
+    UPROPERTY()
+    FEventDispatcher_GameDayChange EventDispatcherGameDayChange;
+
 	void NextDay() 
 	{
-		CurrentDay = static_cast<Days>(static_cast<int>(CurrentDay) + 1);
+		CurrentDay = static_cast<EDays>(static_cast<int>(CurrentDay) + 1);
 
-		if (CurrentDay == Days::Sunday)
+		if (CurrentDay == EDays::Sunday)
 		{
-			CurrentDay = Days::Sunday;
+			CurrentDay = EDays::Sunday;
 		}
+
+        if (EventDispatcherGameDayChange.IsBound()) 
+        {
+            EventDispatcherGameDayChange.Broadcast(CurrentDay);
+        }
 	}
 	
 };

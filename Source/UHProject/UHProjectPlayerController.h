@@ -14,6 +14,9 @@ class UHPROJECT_API AUHProjectPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+    UFUNCTION()
+    void FadeOutAndNextDay();
+
 	UFUNCTION()
 	void FadeOut();
 
@@ -34,8 +37,7 @@ protected:
 	UPROPERTY()
 	float mDuration = 5.0f;
 
-
-protected:
+    FTimerHandle TimeHandle;
 
 	virtual void BeginPlay() override;
 

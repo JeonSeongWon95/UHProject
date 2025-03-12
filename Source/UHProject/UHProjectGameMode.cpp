@@ -1,14 +1,55 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "UHProjectGameMode.h"
 #include "UHProjectCharacter.h"
-#include "UObject/ConstructorHelpers.h"
+#include "UHProjectGameState.h"
+#include "UHProjectPlayerCar.h"
+#include "UHPlayerState.h"
+#include "UHProjectPlayerController.h"
 
 AUHProjectGameMode::AUHProjectGameMode()
 	: Super()
 {
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPerson/Blueprints/BP_FirstPersonCharacter"));
-	DefaultPawnClass = PlayerPawnClassFinder.Class;
+	DefaultPawnClass = AUHProjectCharacter::StaticClass();
+    PlayerStateClass = AUHPlayerState::StaticClass();
+    GameStateClass = AUHProjectGameState::StaticClass();
+    PlayerControllerClass = AUHProjectPlayerController::StaticClass();
+}
 
+void AUHProjectGameMode::BeginPlay()
+{
+    Super::BeginPlay();
+
+    mGameState = GetGameState<AUHProjectGameState>();
+    mGameState->EventDispatcherGameDayChange.AddDynamic(this, &AUHProjectGameMode::SettingAllObjects);
+    
+}
+
+void AUHProjectGameMode::SettingAllObjects(EDays NewDay)
+{
+
+    switch (NewDay)
+    {
+    case EDays::Monday:
+        ResetCharacter();
+        break;
+    case EDays::Tuesday:
+        break;
+    case EDays::Wednesday:
+        break;
+    case EDays::Thursday:
+        break;
+    case EDays::Friday:
+        break;
+    case EDays::Saturday:
+        break;
+    case EDays::Sunday:
+        break;
+    default:
+        break;
+    }
+}
+
+void AUHProjectGameMode::ResetCharacter()
+{
+    mPlayerCharacter->GetInTheCar();
+    mPlayerCharacter->StopLineTrace();
 }

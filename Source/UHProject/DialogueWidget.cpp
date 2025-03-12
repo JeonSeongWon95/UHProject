@@ -1,9 +1,12 @@
 #include "DialogueWidget.h"
+#include "Components/VerticalBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
-#include "Components/VerticalBox.h"
-#include "AnswerStruct.h"
+#include "AnswerActor.h"
 #include "DialogComponent.h"
+#include "Components/Spacer.h"
+#include "Components/Border.h"
+#include "Components/SizeBox.h"
 
 void UDialogueWidget::SetName(const FText& NewText)
 {
@@ -12,34 +15,32 @@ void UDialogueWidget::SetName(const FText& NewText)
 
 void UDialogueWidget::AddAnswer(const FText& NewAnswer,const FName& NextRowName)
 {
-	FAnswerStruct* NewAnswerStruct = new FAnswerStruct();
-	NewAnswerStruct->Button = NewObject<UButton>(this);
-	NewAnswerStruct->Texts = NewObject<UTextBlock>(this);
-
-	NewAnswerStruct->Texts->SetText(NewAnswer);
-	NewAnswerStruct->Button->AddChild(NewAnswerStruct->Texts);
-	NewAnswerStruct->AnswerNextRowName = NextRowName;
-	AnswerBox->AddChildToVerticalBox(NewAnswerStruct->Button);
+    AAnswerActor* mAnswer = NewObject<AAnswerActor>(this);
+    USpacer* Spacer = NewObject<USpacer>(this);
+    mAnswer->SetTextsAndNextRowName(NewAnswer, NextRowName);
+	AnswerBox->AddChildToVerticalBox(Cast<UWidget>(mAnswer->GetButton()));
+    Spacer->SetSize(FVector2D(0, 30));
+    AnswerBox->AddChildToVerticalBox(Spacer);
 
 	switch (ButtonIndex)
 	{
 	case 0:
-		NewAnswerStruct->Button->OnClicked.AddDynamic(this, &UDialogueWidget::OnClickedButtonZero);
+        mAnswer->GetButton()->OnClicked.AddDynamic(this, &UDialogueWidget::OnClickedButtonZero);
 		break;
 	case 1:
-		NewAnswerStruct->Button->OnClicked.AddDynamic(this, &UDialogueWidget::OnClickedButtonOne);
+        mAnswer->GetButton()->OnClicked.AddDynamic(this, &UDialogueWidget::OnClickedButtonOne);
 		break;
 	case 2:
-		NewAnswerStruct->Button->OnClicked.AddDynamic(this, &UDialogueWidget::OnClickedButtonTwo);
+        mAnswer->GetButton()->OnClicked.AddDynamic(this, &UDialogueWidget::OnClickedButtonTwo);
 		break;
 	case 3:
-		NewAnswerStruct->Button->OnClicked.AddDynamic(this, &UDialogueWidget::OnClickedButtonThree);
+        mAnswer->GetButton()->OnClicked.AddDynamic(this, &UDialogueWidget::OnClickedButtonThree);
 		break;
 	default:
 		break;
 	}
 
-	Answers.Add(*NewAnswerStruct);
+	Answers.Add(mAnswer);
 	ButtonIndex++;
 
 }
@@ -52,28 +53,28 @@ void UDialogueWidget::SetDialog(const FText& NewDialog)
 void UDialogueWidget::OnClickedButtonZero()
 {
 	
-	mDialogComponent->SetNextRowName(Answers[0].AnswerNextRowName);
+	mDialogComponent->SetNextRowName(Answers[0]->GetNextRowName());
 	RemoveAnswer();
 	mDialogComponent->StartTalk();
 }
 
 void UDialogueWidget::OnClickedButtonOne()
 {
-	mDialogComponent->SetNextRowName(Answers[1].AnswerNextRowName);
+	mDialogComponent->SetNextRowName(Answers[1]->GetNextRowName());
 	RemoveAnswer();
 	mDialogComponent->StartTalk();
 }
 
 void UDialogueWidget::OnClickedButtonTwo()
 {
-	mDialogComponent->SetNextRowName(Answers[2].AnswerNextRowName);
+	mDialogComponent->SetNextRowName(Answers[2]->GetNextRowName());
 	RemoveAnswer();
 	mDialogComponent->StartTalk();
 }
 
 void UDialogueWidget::OnClickedButtonThree()
 {
-	mDialogComponent->SetNextRowName(Answers[3].AnswerNextRowName);
+	mDialogComponent->SetNextRowName(Answers[3]->GetNextRowName());
 	RemoveAnswer();
 	mDialogComponent->StartTalk();
 }
@@ -88,4 +89,29 @@ void UDialogueWidget::RemoveAnswer()
 	ButtonIndex = 0;
 	AnswerBox->ClearChildren();
 	Answers.Empty();
+}
+
+void UDialogueWidget::ShowAnswerBox()
+{
+    AnswerBox->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UDialogueWidget::HideAnswerBox()
+{
+    AnswerBox->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UDialogueWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+
+    DialogBoxBorder = NewObject<UBorder>(this);
+
+    FSlateBrush Brush;
+    UTexture2D* RoundedTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/SeongWon/Art/circle-39475_640.circle-39475_640'"));
+    Brush.SetResourceObject(RoundedTexture);
+    Brush.TintColor = FSlateColor(FLinearColor(0, 0, 0, 0.2));
+    Brush.DrawAs = ESlateBrushDrawType::Box;
+
+    DialogBoxBorder->SetBrush(Brush);
 }

@@ -1,8 +1,11 @@
 #include "UHProjectPlayerCar.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "UHPlayerState.h"
 #include "UHProjectCharacter.h"
+#include "UHPlayerState.h"
+#include "Components/SplineComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 void AUHProjectPlayerCar::Interaction_Implementation()
 {
@@ -10,35 +13,27 @@ void AUHProjectPlayerCar::Interaction_Implementation()
 
 	if (mPlayerCharacter->mPlayerState->IsInTheCar)
 	{
-		mPlayerCharacter->mPlayerState->IsInTheCar = false;
-		FVector TargetLocation = GetActorLocation().RightVector + 100;
-		mPlayerCharacter->SetActorLocation(TargetLocation);
-		mPlayerCharacter->mPlayerState->CanMove = true;
-		mPlayerCharacter->mPlayerState->CanLook = true;
+        mPlayerCharacter->GetOutTheCar();
 	}
 	else 
 	{
-		mPlayerCharacter->mPlayerState->IsInTheCar = true;
-		mPlayerCharacter->SetActorLocation(DriverSeatLocation);
-		mPlayerCharacter->mPlayerState->CanMove = false;
-		mPlayerCharacter->mPlayerState->CanLook = true;
+        mPlayerCharacter->GetInTheCar();
 	}
 }
 
 AUHProjectPlayerCar::AUHProjectPlayerCar()
 {
+    mDriverSeat = CreateDefaultSubobject<USceneComponent>(TEXT("DriverSeat"));
+    mDriverSeat->SetupAttachment(ItemMesh);
+
 	PrimaryActorTick.bCanEverTick = true;
 
+    if (mSplineActor != nullptr)
+    {
+        mDriveLine = mSplineActor->GetComponentByClass<USplineComponent>();
+    }
+
 	Name = "My Car";
-
-	CarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CarMesh"));
-
-	ObjectCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorCollision"));
-	ObjectCollision->SetupAttachment(CarMesh);
-
-	CarCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CarCollision"));
-	CarCollision->SetupAttachment(CarMesh);
-	CarCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AUHProjectPlayerCar::BeginPlay()
@@ -50,5 +45,41 @@ void AUHProjectPlayerCar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AUHProjectPlayerCar::SetMeshCollision(bool IsUse)
+{
+    if (IsUse) 
+    {
+        ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    }
+    else 
+    {
+        ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    }
+}
+
+void AUHProjectPlayerCar::Drive()
+{
+    BlueprintDrive();
+
+    if (mCarSounds.Num() > 0)
+    {
+        mSpawnedSound = UGameplayStatics::SpawnSound2D(GetWorld(), mCarSounds[0]);
+    }
+}
+
+void AUHProjectPlayerCar::FinishDrive()
+{
+    mPlayerCharacter->ResetCharacter();
+
+    if (mSpawnedSound->IsPlaying()) 
+    {
+        mSpawnedSound->Stop();
+    }
+
+    UGameplayStatics::PlaySound2D(GetWorld(), mCarSounds[1]);
+
+    mPlayerCharacter->Soliloquy();
 }
 

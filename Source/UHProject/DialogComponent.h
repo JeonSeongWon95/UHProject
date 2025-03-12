@@ -48,5 +48,27 @@ public:
 
 	UFUNCTION()
 	void EndTalk();
-		
+
+    UFUNCTION()
+    void SetDialogDataTable(UDataTable* NewDataTable);
+
+    UFUNCTION()
+    void SetStartDataTableRowName(FName StartName);
+
+private:
+    void UpdateTalk();
+
+    void ActionA();
+
+    void ActionB();
+ 
+    void ActionC();
+
+    struct FDialogStruct* Dialog;
+
+    FString TransformDialog = "";
+
+    FTimerHandle TalkTimerHandle;
+
+    int32 DialogIndex = 0;
 };

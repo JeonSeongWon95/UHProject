@@ -14,8 +14,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<class UTextBlock> ObjectName;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<class UTextBlock> PressEKey;
+    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+    TObjectPtr<class UImage> EKeyImage;
 
 	UFUNCTION()
 	void SetObjectName(FString NewName);
